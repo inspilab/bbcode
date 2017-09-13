@@ -315,7 +315,7 @@ class Parser (object):
             ch = data[i]
             if ch == '=':
                 quotable = True
-            if ch in ('"', "'"):
+            if ch in ('"',):
                 if quotable and not in_quote:
                     in_quote = ch
                 elif in_quote == ch:
@@ -359,6 +359,10 @@ class Parser (object):
                 end, found_close = self._tag_extent(data, start)
                 if found_close:
                     tag = data[start:end]
+
+                    if 'quote' in tag or 'QUOTE' in tag:
+                        tag = self._replace(tag, self.REPLACE_ESCAPE) 
+                    
                     valid, tag_name, closer, opts = self._parse_tag(tag)
                     # Make sure this is a well-formed, recognized tag, otherwise it's just data.
                     if valid and tag_name in self.recognized_tags:
