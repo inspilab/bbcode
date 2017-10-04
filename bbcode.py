@@ -213,6 +213,28 @@ class Parser (object):
             url="http://test.com/s.php?a=bcd efg" popup
                 tag_name=url, options={'url': 'http://test.com/s.php?a=bcd efg', 'popup': ''}
         """
+
+        # EDIT
+        # Pre-process
+        # Case: tag_name="example" or tag_name='example'
+        assign_charater_position = data.find("=")
+        
+        if assign_charater_position > -1:
+            start_value = data[assign_charater_position + 1]
+            
+            if start_value in ['"', "'"] :
+                end_position = len(data) - 1
+                start_position = assign_charater_position + 1
+
+                if end_position != start_position:
+                    end_value=data[len(data) - 1]
+                
+                    if start_value == end_value:
+                        data = data[:end_position]
+                        data = data[:start_position] + data[start_position + 1:]
+                        import html
+                        data = self._replace(data, self.REPLACE_ESCAPE)
+
         name = None
         try:
             # OrderedDict is only available for 2.7+, so leave regular unsorted dicts as a fallback.
@@ -315,12 +337,14 @@ class Parser (object):
             ch = data[i]
             if ch == '=':
                 quotable = True
-            if ch in ('"',):
-                if quotable and not in_quote:
+            if ch in ('"', "'"):
+                if quotable and not in_quote and data[i - 1] == '=':
                     in_quote = ch
                 elif in_quote == ch:
-                    in_quote = False
-                    quotable = False
+                    if (i + 1) <= (len(data) - 1):
+                        if data[i + 1] == self.tag_closer:
+                            in_quote = False
+                            quotable = False
             if not in_quote and data[i:i + lto] == self.tag_opener:
                 return i, False
             if not in_quote and data[i:i + ltc] == self.tag_closer:
@@ -359,9 +383,6 @@ class Parser (object):
                 end, found_close = self._tag_extent(data, start)
                 if found_close:
                     tag = data[start:end]
-
-                    if 'quote' in tag or 'QUOTE' in tag:
-                        tag = self._replace(tag, self.REPLACE_ESCAPE) 
                     
                     valid, tag_name, closer, opts = self._parse_tag(tag)
                     # Make sure this is a well-formed, recognized tag, otherwise it's just data.
