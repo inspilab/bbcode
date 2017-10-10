@@ -268,7 +268,7 @@ class Parser (object):
                     else:
                         value += ch
                 else:
-                    if ch in ('"', "'"):
+                    if ch in ('"', "'") and stripped[pos - 1] == '=':
                         in_quote = ch
                     elif ch == ' ' and data.find('=', pos + 1) > 0:
                         # If there is no = after this, the value may accept spaces.
