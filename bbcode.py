@@ -342,7 +342,7 @@ class Parser (object):
                     in_quote = ch
                 elif in_quote == ch:
                     if (i + 1) <= (len(data) - 1):
-                        if data[i + 1] == self.tag_closer:
+                        if data[i + 1] == self.tag_closer or (i + 1) <= (len(data) - 1) and data[i + 1] == ';':
                             in_quote = False
                             quotable = False
             if not in_quote and data[i:i + lto] == self.tag_opener:
