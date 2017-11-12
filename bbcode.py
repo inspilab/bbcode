@@ -347,7 +347,23 @@ class Parser (object):
                             quotable = False
             if not in_quote and data[i:i + lto] == self.tag_opener:
                 return i, False
-            if not in_quote and data[i:i + ltc] == self.tag_closer:
+            if not in_quote and (data[i:i + ltc] == self.tag_closer
+                                 or (i + 1) <= (len(data) - 1) and ch in ('"', "'") and data[i + 1] == ';'):
+                if (i + 1) <= (len(data) - 1) and data[i + 1] == ';':
+                    if self.tag_closer == ']':
+                        regex = re.compile(r'[0-9]+\]')
+                    else:
+                        print('Unrecognized tag_closer: {}'.format(
+                            self.tag_closer))
+
+                    find_closer = regex.search(data[i + 1:])
+
+                    if find_closer:
+                        pos = find_closer.span()
+                        closer_pos = pos[1]
+
+                        if data[i + closer_pos] == self.tag_closer:
+                            return i + 1 + closer_pos, True
                 return i + ltc, True
         return len(data), False
 
