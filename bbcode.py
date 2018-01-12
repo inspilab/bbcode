@@ -309,6 +309,9 @@ class Parser (object):
         parse any options and return a tuple of the form:
             (valid, tag_name, closer, options)
         """
+        if tag[1:4].lower() == 'url' and ('\r' in tag or '\n' in tag):
+            tag = tag.replace('\r', '').replace('\n', '')
+
         if (not tag.startswith(self.tag_opener)) or (not tag.endswith(self.tag_closer)) or ('\n' in tag) or ('\r' in tag):
             return (False, tag, False, None)
         tag_name = tag[len(self.tag_opener):-len(self.tag_closer)].strip()
