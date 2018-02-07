@@ -1,3 +1,7 @@
+### 1.0.27
+
+* Hot fix: ignore tag has no attributes.
+
 ### 1.0.26
 
 * Allow overriding parser's `replace_html`, `replace_links`, and `replace_cosmetic` on `format` calls.
