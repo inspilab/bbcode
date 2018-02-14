@@ -54,8 +54,6 @@ class Parser (object):
     )
 
     REPLACE_COSMETIC = (
-        ('---', '&mdash;'),
-        ('--', '&ndash;'),
         ('...', '&#8230;'),
         ('(c)', '&copy;'),
         ('(reg)', '&reg;'),
